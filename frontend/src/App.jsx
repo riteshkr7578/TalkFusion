@@ -24,8 +24,8 @@ export default function App() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8000/chat", {
-        message: newMessage.text,
+      const res = await axios.post("https://ai-chat-backend.onrender.com/chat", {
+        message: input,
       });
 
       const botMessage = {
@@ -57,11 +57,10 @@ export default function App() {
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`max-w-[75%] p-3 rounded-xl ${
-              msg.sender === "user"
+            className={`max-w-[75%] p-3 rounded-xl ${msg.sender === "user"
                 ? "bg-blue-600 ml-auto"
                 : "bg-gray-700 mr-auto"
-            }`}
+              }`}
           >
             {msg.text}
           </div>
