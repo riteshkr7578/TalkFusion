@@ -24,8 +24,8 @@ export default function App() {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://ai-chat-backend.onrender.com/chat", {
-        message: input,
+      const res = await axios.post("https://talkfusion-3uw7.onrender.com/chat", {
+        message: input
       });
 
       const botMessage = {
