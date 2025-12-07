@@ -30,3 +30,6 @@ async def chat(req: ChatRequest):
         ]
     )
     return {"reply": response.choices[0].message.content}
+@app.get("/")
+async def health():
+    return {"status": "ok", "message": "Backend is awake!"}
