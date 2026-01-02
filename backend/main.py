@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
@@ -36,6 +37,6 @@ async def chat(req: ChatRequest):
         # If the Groq API fails, return the error message
         return {"error": str(e)}
 
-@app.get("/", methods=["GET", "HEAD"])
-async def health():
+@app.api_route("/", methods=["GET", "HEAD"])
+async def health(request: Request):
     return {"status": "ok", "message": "Backend is awake!"}
