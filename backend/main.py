@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
 from dotenv import load_dotenv
-import os   
+import os
 
 load_dotenv()
 
@@ -24,15 +24,17 @@ class ChatRequest(BaseModel):
     
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "user", "content": req.message}
-        ]
-    )
-    return {"reply": response.choices[0].message.content}
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "user", "content": req.message}
+            ]
+        )
+        return {"reply": response.choices[0].message.content}
     except Exception as e:
-        return {"error": str(e)}, 500
+        # If the Groq API fails, return the error message
+        return {"error": str(e)}
 
 @app.get("/", methods=["GET", "HEAD"])
 async def health():
