@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 
 export default function App() {
   const [input, setInput] = useState("");
@@ -55,16 +58,39 @@ export default function App() {
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`max-w-[75%] p-3 rounded-xl ${msg.sender === "user"
-                ? "bg-blue-600 ml-auto"
-                : "bg-gray-700 mr-auto"
-              }`}
-          >
-            {msg.text}
-          </div>
-        ))}
+  <div
+    key={idx}
+    className={`max-w-[75%] p-3 rounded-xl whitespace-pre-wrap ${
+      msg.sender === "user"
+        ? "bg-blue-600 ml-auto"
+        : "bg-gray-700 mr-auto"
+    }`}
+  >
+    <ReactMarkdown
+  remarkPlugins={[remarkGfm]}
+  components={{
+    code({ inline, children }) {
+      if (inline) {
+        return (
+          <code className="bg-gray-800 px-1 py-0.5 rounded text-sm">
+            {children}
+          </code>
+        );
+      }
+
+      return (
+        <pre className="bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+          <code>{children}</code>
+        </pre>
+      );
+    }
+  }}
+>
+  {msg.text}
+</ReactMarkdown>
+  </div>
+))}
+
 
         {loading && (
           <div className="bg-gray-700 p-3 rounded-xl w-fit mr-auto">
