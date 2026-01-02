@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
 from dotenv import load_dotenv
-import os   # <-- THIS WAS MISSING EARLIER
+import os   
 
 load_dotenv()
 
@@ -21,6 +21,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
+    
 @app.post("/chat")
 async def chat(req: ChatRequest):
     response = client.chat.completions.create(
@@ -30,6 +31,9 @@ async def chat(req: ChatRequest):
         ]
     )
     return {"reply": response.choices[0].message.content}
-@app.get("/")
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+@app.get("/", methods=["GET", "HEAD"])
 async def health():
     return {"status": "ok", "message": "Backend is awake!"}
