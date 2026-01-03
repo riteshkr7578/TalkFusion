@@ -35,7 +35,14 @@ export default function App() {
     try {
       const res = await axios.post(
         "https://talkfusion-3uw7.onrender.com/chat",
-        { message: input }
+       {
+  message: input,
+  history: messages.map(m => ({
+    role: m.sender === "user" ? "user" : "assistant",
+    content: m.text
+  }))
+}
+
       );
 
       setMessages((prev) => [

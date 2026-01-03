@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
 from dotenv import load_dotenv
 import os
+from typing import List, Optional
 
 load_dotenv()
 
@@ -19,8 +20,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
 class ChatRequest(BaseModel):
     message: str
+    history: Optional[List[ChatMessage]] = []
 
 
 @app.post("/chat")
@@ -54,18 +60,34 @@ async def chat(req: ChatRequest):
                 "- Keep the explanation moderately detailed and structured"
             )
 
+        # 🔥 STEP 3: BUILD MESSAGE LIST WITH HISTORY
+        messages = [
+            {"role": "system", "content": system_prompt}
+        ]
+
+        # Add previous conversation (memory)
+        for msg in req.history:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content
+            })
+
+        # Add current user message
+        messages.append({
+            "role": "user",
+            "content": req.message
+        })
+
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": req.message}
-            ]
+            messages=messages
         )
 
         return {"reply": response.choices[0].message.content}
 
     except Exception as e:
         return {"error": str(e)}
+
 
 
 @app.api_route("/", methods=["GET", "HEAD"])
