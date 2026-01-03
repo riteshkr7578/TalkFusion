@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
@@ -22,7 +21,8 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
-    
+
+
 @app.post("/chat")
 async def chat(req: ChatRequest):
     try:
@@ -34,25 +34,25 @@ async def chat(req: ChatRequest):
             "function", "algorithm", "script"
         ])
 
-       if is_code_question:
-    system_prompt = (
-        "You are a programming assistant. "
-        "Respond in a clean and concise format:\n"
-        "- Short title\n"
-        "- Code in a markdown code block\n"
-        "- Brief explanation (2–3 lines max)\n"
-        "Avoid unnecessary theory."
-    )
-else:
-    system_prompt = (
-        "You are a knowledgeable assistant. "
-        "Respond using MARKDOWN formatting:\n"
-        "- Start with a clear heading\n"
-        "- Use bullet points or short paragraphs\n"
-        "- Highlight key sections with **bold text**\n"
-        "- Do NOT include code blocks unless explicitly asked\n"
-        "- Keep the explanation moderately detailed and structured"
-    )
+        if is_code_question:
+            system_prompt = (
+                "You are a programming assistant. "
+                "Respond in a clean and concise format:\n"
+                "- Short title\n"
+                "- Code in a markdown code block\n"
+                "- Brief explanation (2–3 lines max)\n"
+                "Avoid unnecessary theory."
+            )
+        else:
+            system_prompt = (
+                "You are a knowledgeable assistant. "
+                "Respond using MARKDOWN formatting:\n"
+                "- Start with a clear heading\n"
+                "- Use bullet points or short paragraphs\n"
+                "- Highlight key sections with **bold text**\n"
+                "- Do NOT include code blocks unless explicitly asked\n"
+                "- Keep the explanation moderately detailed and structured"
+            )
 
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
