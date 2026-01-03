@@ -26,25 +26,37 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat(req: ChatRequest):
     try:
+        user_message = req.message.lower()
+
+        # Detect programming / code questions
+        is_code_question = any(keyword in user_message for keyword in [
+            "code", "program", "wap", "python", "java", "c++",
+            "function", "algorithm", "script"
+        ])
+
+        if is_code_question:
+            system_prompt = (
+                "You are a programming assistant. "
+                "Respond briefly and in a formatted way:\n"
+                "- Short title\n"
+                "- Code in a markdown code block\n"
+                "- Very brief explanation (1–2 lines)\n"
+                "Do not add unnecessary details."
+            )
+        else:
+            system_prompt = (
+                "You are a helpful assistant. "
+                "Answer in simple, clear text.\n"
+                "- No code blocks\n"
+                "- No examples unless asked\n"
+                "- Keep it short and informative"
+            )
+
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a programming assistant. "
-                        "Always respond in a SIMPLE and FORMATTED way:\n"
-                        "- Give a short title\n"
-                        "- Show the solution code in a markdown code block\n"
-                        "- Add very brief working (1–2 lines only)\n"
-                        "- Add example output if applicable\n"
-                        "Do NOT give long explanations."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": req.message
-                }
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": req.message}
             ]
         )
 
@@ -52,6 +64,7 @@ async def chat(req: ChatRequest):
 
     except Exception as e:
         return {"error": str(e)}
+
 
 @app.api_route("/", methods=["GET", "HEAD"])
 async def health(request: Request):

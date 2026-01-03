@@ -116,7 +116,7 @@ export default function App() {
 
         {loading && (
           <div className="bg-gray-700 p-3 rounded-xl w-fit mr-auto animate-pulse">
-            AI is typing...
+            Fusion is typing...
           </div>
         )}
 
