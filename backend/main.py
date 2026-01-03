@@ -28,7 +28,7 @@ async def chat(req: ChatRequest):
     try:
         user_message = req.message.lower()
 
-        # Detect programming / code questions
+        # Detect programming-related queries
         is_code_question = any(keyword in user_message for keyword in [
             "code", "program", "wap", "python", "java", "c++",
             "function", "algorithm", "script"
@@ -37,19 +37,20 @@ async def chat(req: ChatRequest):
         if is_code_question:
             system_prompt = (
                 "You are a programming assistant. "
-                "Respond briefly and in a formatted way:\n"
+                "Respond in a clean and concise format:\n"
                 "- Short title\n"
                 "- Code in a markdown code block\n"
-                "- Very brief explanation (1–2 lines)\n"
-                "Do not add unnecessary details."
+                "- Brief explanation (2–3 lines max)\n"
+                "Avoid unnecessary theory."
             )
         else:
             system_prompt = (
-                "You are a helpful assistant. "
-                "Answer in simple, clear text.\n"
-                "- No code blocks\n"
-                "- No examples unless asked\n"
-                "- Keep it short and informative"
+                "You are a knowledgeable assistant. "
+                "Provide a clear and moderately detailed explanation:\n"
+                "- Use headings or bullet points where helpful\n"
+                "- Explain concepts clearly in short paragraphs\n"
+                "- Do NOT include code unless explicitly asked\n"
+                "- Keep it informative but not overly long"
             )
 
         response = client.chat.completions.create(
