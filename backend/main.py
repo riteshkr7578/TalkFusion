@@ -29,12 +29,28 @@ async def chat(req: ChatRequest):
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {"role": "user", "content": req.message}
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a programming assistant. "
+                        "Always respond in a SIMPLE and FORMATTED way:\n"
+                        "- Give a short title\n"
+                        "- Show the solution code in a markdown code block\n"
+                        "- Add very brief working (1–2 lines only)\n"
+                        "- Add example output if applicable\n"
+                        "Do NOT give long explanations."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": req.message
+                }
             ]
         )
+
         return {"reply": response.choices[0].message.content}
+
     except Exception as e:
-        # If the Groq API fails, return the error message
         return {"error": str(e)}
 
 @app.api_route("/", methods=["GET", "HEAD"])
